@@ -5,16 +5,17 @@
  * MIT License
  * Paul Irish     | @paul_irish | www.paulirish.com
  * Andree Hansson | @peolanha   | www.andreehansson.se
- * 2010.
+ * Michael Wolfe  - rename to imgload, react to unbind
+ * 2010,2011
  *
  * Usage:
- * $(images).bind('load', function (e) {
+ * $(images).bind('imgload', function (e) {
  *   // Do stuff on load
  * });
- * 
+ *
  * Note that you can bind the 'error' event on data uri images, this will trigger when
  * data uri images isn't supported.
- * 
+ *
  * Tested in:
  * FF 3+
  * IE 6-8
@@ -22,7 +23,7 @@
  * Opera 9-10
  */
 (function ($) {
-	$.event.special.load = {
+	$.event.special.imgload = {
 		add: function (hollaback) {
 			if ( this.nodeType === 1 && this.tagName.toLowerCase() === 'img' && this.src !== '' ) {
 				// Image is already complete, fire the hollaback (fixes browser issues were cached
@@ -35,11 +36,15 @@
 				else if ( this.readyState === 'uninitialized' && this.src.indexOf('data:') === 0 ) {
 					$(this).trigger('error');
 				}
-				
+
 				else {
 					$(this).bind('load', hollaback.handler);
 				}
 			}
-		}
+    },
+    remove: function (hollaback) {
+      $(this).unbind('load',hollaback.handler);
+      return false;
+    }
 	};
 }(jQuery));
